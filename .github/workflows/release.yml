@@ -25,9 +25,10 @@ jobs:
               with:
                 files: phase1
     
-    # Adapted as needed from
+    # Adapted as needed from the following three sources:
     # https://gist.github.com/Daniel-ltw/552b90800b07c22e4a83dfa68ada6318
-    # and https://stackoverflow.com/questions/58033366/how-to-get-the-current-branch-within-github-actions
+    # https://stackoverflow.com/questions/58033366/how-to-get-the-current-branch-within-github-actions
+    # https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#create-a-repository-dispatch-event
     publish:
         name: Containerize and publish via triggering phase2 repo
         needs: [build_test_store]
@@ -45,5 +46,5 @@ jobs:
               id: extract_tag
             - name: Trigger phase2 repo
               run: |
-                curl -d "{\"event_type\": \"${EVENT}\", \"client_payload\": {\"tag\": \"${{ steps.extract_tag.outputs.tag }}\"}}" -H "Content-Type: application/json" -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.github.everest-preview+json" "https://api.github.com/repos/${ORG}/${REPO}/dispatches"
+                curl -d "{\"event_type\": \"${EVENT}\", \"client_payload\": {\"tag\": \"${{ steps.extract_tag.outputs.tag }}\"}}" -H "Content-Type: application/json" -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" "https://api.github.com/repos/${ORG}/${REPO}/dispatches"
   
