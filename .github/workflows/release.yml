@@ -1,0 +1,24 @@
+name: Prepare and store binary assets for GitHub repository relases
+on:
+    release:
+        types: [published]
+jobs:
+    build_test_store:
+        name: Build, test, and store the binary
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout source
+              uses: actions/checkout@v4
+            - name: Setup Go
+              uses: actions/setup-go@v5
+              with:
+                go-version-file: 'go.mod'
+            - name: Build
+              run: go build -v ./...
+            - name: Test
+              run: go test
+            - name: Store
+              uses: softprops/action-gh-release@v2
+              if: ${{startsWith(github.ref, 'refs/tags/') }}
+              with:
+                files: phase1
