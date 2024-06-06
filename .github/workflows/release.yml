@@ -24,3 +24,25 @@ jobs:
               if: ${{startsWith(github.ref, 'refs/tags/') }}
               with:
                 files: phase1
+    
+    # Adapted as needed from
+    # https://gist.github.com/Daniel-ltw/552b90800b07c22e4a83dfa68ada6318
+    # and https://stackoverflow.com/questions/58033366/how-to-get-the-current-branch-within-github-actions
+    publish:
+        name: Containerize and publish via triggering phase2 repo
+        runs-on: ubuntu-latest
+        if: ${{startsWith(github.ref, 'refs/tags/') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT: phase1-release
+          ORG: jkaplowitz
+          REPO: mondoo-phase2
+        steps:
+            - name: Extract current tag name
+              shell: bash
+              run: echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+              id: extract_tag
+            - name: Trigger phase2 repo
+              run: |
+                curl -d "{\"event_type\": \"${EVENT}\", \"client_payload\": {"tag": \"\${{ steps.extract_tag.outputs.tag }}"}}" -H "Content-Type: application/json" -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.github.everest-preview+json" "https://api.github.com/repos/${ORG}/${REPO}/dispatches"
+  
