@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 )
 
 func main() {
@@ -22,5 +23,13 @@ func main() {
 		}
 	}
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), nil))
+	s := &http.Server{
+		Addr:           fmt.Sprintf(":%d", port),
+		Handler:        nil,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+		MaxHeaderBytes: 1 << 20,
+	}
+
+	log.Fatal(s.ListenAndServe())
 }
