@@ -6,6 +6,8 @@ jobs:
     build_test_store:
         name: Build, test, and store the binary
         runs-on: ubuntu-latest
+        permissions:
+            contents: write
         steps:
             - name: Checkout source
               uses: actions/checkout@v4
