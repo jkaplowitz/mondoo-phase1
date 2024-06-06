@@ -24,4 +24,3 @@ jobs:
               if: ${{startsWith(github.ref, 'refs/tags/') }}
               with:
                 files: phase1
-                token: ${{ secrets.GITHUB_TOKEN }}
