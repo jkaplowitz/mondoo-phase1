@@ -30,6 +30,7 @@ jobs:
     # and https://stackoverflow.com/questions/58033366/how-to-get-the-current-branch-within-github-actions
     publish:
         name: Containerize and publish via triggering phase2 repo
+        needs: [build_test_store]
         runs-on: ubuntu-latest
         if: ${{startsWith(github.ref, 'refs/tags/') }}
         env:
