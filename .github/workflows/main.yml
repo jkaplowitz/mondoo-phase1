@@ -37,8 +37,8 @@ jobs:
         uses: golangci/golangci-lint-action@v6
         with:
           version: v1.59.0
-  build:
-    name: Build the binary
+  build_test:
+    name: Build and test the binary
     needs: [gosec, golangci]
     runs-on: ubuntu-latest
     steps:
