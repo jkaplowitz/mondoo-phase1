@@ -1,0 +1,52 @@
+# Adapted from the examples in the README.md files from the
+# https://github.com/securego/gosec and
+# https://github.com/golangci/golangci-lint-action repositories.
+
+name: Handle pushes and PRs to main branch
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  gosec:
+    name: Security scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Run Gosec security scanner
+        uses: securego/gosec@v2.20.0
+        with:
+          args: ./...
+  golangci:
+    name: Code lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22.x'
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.59.0
+  build:
+    name: Build the binary
+    needs: [gosec, golangci]
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout source
+          uses: actions/checkout@v4
+        - name: Setup Go
+          uses: actions/setup-go@v5
+          with:
+            go-version: '1.22.x'
+        - name: Build
+          run: go build -v ./...
+        - name: Test
+          run: go test
